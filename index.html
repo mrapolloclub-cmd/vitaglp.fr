@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitaGLP® - Activation du métabolisme</title>
+    <style>
+        /* --- 原有样式保留 --- */
+        h1 { font-weight: 800 !important; color: #111; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
+        .problem-card, .doctor-box, .slide-content { border-radius: 15px; overflow: hidden; }
+        .btn-order { text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(180deg, #d1021f 0%, #a30118 100%); }
+        :root { --magenta: #e20074; --red-alert: #d1021f; --green-success: #28a745; --bg-light: #f4f7f9; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 0; color: #333; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
+        img { max-width: 100%; height: auto; display: block; }
+        .v-link { color: inherit; text-decoration: underline; cursor: pointer; }
+        
+        /* --- 顶部 Header 适配优化 --- */
+        .header-top { background: #f6f6f6; border-bottom: 1px solid #eee; font-size: 12px; padding: 8px 0; color: #666; }
+        .header-top .flex { display: flex; justify-content: space-between; }
+        
+        .nav-main { display: flex; justify-content: space-between; align-items: center; padding: 15px 15px; position: relative; }
+        .logo-t { height: 24px; flex-shrink: 0; }
+        .search-box { flex: 1; margin: 0 20px; display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; }
+        .search-box input { width: 100%; padding: 8px; border: none; outline: none; }
+        
+        .mobile-actions { display: none; gap: 15px; align-items: center; flex-shrink: 0; }
+        .mobile-actions svg { cursor: pointer; color: #333; }
+        
+        .nav-links { border-top: 1px solid #eee; padding: 10px 0; display: flex; gap: 15px; font-weight: bold; font-size: 13px; list-style: none; margin: 0; overflow-x: auto; white-space: nowrap; }
+        .nav-links a { color: inherit; text-decoration: none; }
+
+        /* --- 主体内容样式 --- */
+        .hero { padding: 40px 0; text-align: center; }
+        .hero h1 { font-size: 32px; font-weight: 900; line-height: 1.2; color: #000; margin-bottom: 20px; }
+        .hero .subhead { font-size: 18px; color: #444; margin-bottom: 25px; }
+        .hero-highlights { display: flex; justify-content: center; gap: 15px; list-style: none; padding: 0; font-weight: bold; color: var(--magenta); flex-wrap: wrap; }
+        .hero-highlights li::before { content: "✓ "; }
+        
+        .doctor-box { background: var(--bg-light); padding: 50px 0; }
+        .flex-row { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
+        .flex-cell { flex: 1; min-width: 300px; }
+        .doctor-img { border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; }
+        .doctor-badge { display: inline-block; background: #0d1b3e; color: #fff; padding: 8px 15px; border-radius: 4px; font-size: 14px; margin-top: 15px; font-weight: bold; }
+        
+        .problem-container { padding: 50px 0; }
+        .problem-card { border-left: 8px solid var(--red-alert); background: #fffcfc; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .problem-list { list-style: none; padding: 0; margin: 20px 0; }
+        .problem-list li { margin-bottom: 12px; padding-left: 30px; position: relative; font-size: 18px; }
+        .problem-list li::before { content: "•"; position: absolute; left: 0; color: var(--red-alert); font-weight: bold; }
+        
+        .danger-box { padding: 50px 0; background: #fff; }
+        .danger-note { background: #ffe3e3; padding: 20px; border-radius: 8px; font-weight: bold; color: #c00; margin-top: 20px; border-left: 5px solid #c00; }
+        
+        .precision-section { background: #f0f7ff; padding: 50px 0; border-radius: 25px; margin: 20px 0; }
+        .how-works-section { padding: 60px 0; background: #fff; border: 1px solid #eee; border-radius: 30px; margin: 30px 0; }
+        .how-works-list { list-style: none; padding: 0; margin: 25px 0; }
+        .how-works-list li { margin-bottom: 15px; padding-left: 35px; position: relative; font-size: 18px; font-weight: 500; }
+        .how-works-list li::before { content: "✓"; position: absolute; left: 0; color: var(--green-success); font-weight: 900; font-size: 20px; }
+        
+        .compare-section { padding: 60px 0; }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .compare-card { padding: 30px; border-radius: 20px; border: 1px solid #eee; }
+        .compare-card.danger { border-top: 8px solid #999; background: #fafafa; }
+        .compare-card.success { border: 2px solid var(--green-success); border-top: 8px solid var(--green-success); background: #f7fff7; }
+        .compare-list { list-style: none; padding: 0; margin-top: 20px; }
+        .compare-list li { margin-bottom: 12px; padding-left: 30px; position: relative; }
+        .danger-list li::before { content: "✕"; position: absolute; left: 0; color: var(--red-alert); font-weight: bold; }
+        .success-list li::before { content: "✓"; position: absolute; left: 0; color: var(--green-success); font-weight: bold; }
+        
+        /* 评论滚动 */
+        .comment-ticker-container { background: #fff; padding: 40px 0; overflow: hidden; border-top: 1px solid #eee; }
+        .ticker-wrapper { display: flex; width: fit-content; animation: ticker 40s linear infinite; }
+        .ticker-wrapper:hover { animation-play-state: paused; }
+        .comment-card { min-width: 280px; background: #f9f9f9; margin-right: 20px; padding: 20px; border-radius: 12px; border: 1px solid #eee; }
+        .comment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background-size: cover; background-position: center; flex-shrink: 0; }
+        .stars { color: #ffc107; font-size: 14px; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+
+        /* 轮播图 */
+        .carousel-container { position: relative; overflow: hidden; padding: 20px 0; }
+        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; box-sizing: border-box; padding: 0 10px; }
+        .slide-content { display: flex; gap: 30px; align-items: center; background: #fff; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .dot { width: 10px; height: 10px; background: #ccc; border-radius: 50%; cursor: pointer; }
+        .dot.active { background: var(--magenta); }
+
+        .cta-section { text-align: center; padding: 60px 0; border-top: 5px solid var(--magenta); background: #fff; }
+        .btn-order { background: var(--red-alert); color: #fff !important; padding: 18px 40px; font-size: 20px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block; box-shadow: 0 8px 20px rgba(209,2,31,0.3); }
+        
+        /* 动画与悬浮按钮 */
+        @keyframes heartBeat { 0%, 28%, 70% { transform: scale(1); } 14%, 42% { transform: scale(1.05); } }
+        .pulse-button { animation: heartBeat 2s infinite ease-in-out; }
+        .v-brand { color: #e20074 !important; font-weight: 800 !important; text-decoration: none; border-bottom: 2px solid #e20074; padding: 0 2px; }
+        
+        .sticky-cta { position: fixed; bottom: 20px; right: 20px; z-index: 999; background: var(--red-alert); color: #fff; padding: 12px 20px; border-radius: 30px; font-weight: 900; text-decoration: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2); font-size: 14px; animation: heartBeat 2s infinite; border: 2px solid #fff; transition: opacity 0.3s; }
+
+        /* --- 手机端核心适配媒体查询 --- */
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+            .header-top { display: none; } 
+            
+            /* 导航栏适配 */
+            .nav-main { padding: 10px 15px; }
+            .logo-t { height: 18px; }
+            .search-box, .nav-main > button { display: none; } 
+            .mobile-actions { display: flex; }
+            
+            /* 菜单折叠 */
+            .nav-links { 
+                display: none; 
+                flex-direction: column; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                width: 100%; 
+                background: #fff; 
+                z-index: 1000; 
+                border-bottom: 1px solid #eee;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+            }
+            .nav-links.active { display: flex; }
+            .nav-links li { border-bottom: 1px solid #f9f9f9; padding: 12px 20px; }
+            
+            /* 文字与布局缩放 */
+            .hero h1 { font-size: 26px; }
+            .hero .subhead { font-size: 16px; }
+            .flex-row { flex-direction: column; gap: 20px; text-align: center; }
+            .flex-cell { min-width: 100%; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .slide-content { flex-direction: column; text-align: center; }
+            .slide-content img { width: 100% !important; max-width: 250px; }
+            
+            .sticky-cta { left: 15px; right: 15px; text-align: center; bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="#purchase-section" class="sticky-cta" id="stickyCta">
+    🛒 PROFITEZ DE LA RÉDUCTION MAINTENANT ➔
+</a>
+
+<div class="header-top">
+    <div class="container flex">
+        <div>Météo | CAC 40 | Annuaires | Loto</div>
+        <div>Services Télécom ▾ | <strong>Connexion abonnement PUR</strong></div>
+    </div>
+</div>
+
+<div class="container nav-main">
+    <img src="10001.svg" class="logo-t" alt="t-online">
+    <div class="search-box"><input type="text" placeholder="Entrez votre recherche"></div>
+    <button style="border: 1px solid var(--magenta); color: var(--magenta); background: none; padding: 6px 12px; font-weight: bold; border-radius: 4px;">Connexion E-Mail</button>
+    
+    <div class="mobile-actions">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.708 2.825L15 11.105V5.383zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 14 13h12a1 1 0 0 0 .966-.741zM1 11.105l4.708-2.897L1 5.383v5.722z"/></svg>
+        <svg id="menuToggle" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" onclick="toggleMenu()"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>
+    </div>
+</div>
+
+<div class="container" style="position: relative;">
+    <ul class="nav-links" id="navLinks">
+        <li><a href="https://www.vitaglpbio.com/cf/click">Politique</a></li>
+        <li><a href="https://www.vitaglpbio.com/cf/click">Ukraine</a></li>
+        <li><a href="https://www.vitaglpbio.com/cf/click">Régional</a></li>
+        <li><a href="https://www.vitaglpbio.com/cf/click">Sport</a></li>
+        <li><a href="https://www.vitaglpbio.com/cf/click">Économie</a></li>
+        <li><a href="https://www.vitaglpbio.com/cf/click">Santé</a></li>
+        <li><a href="https://www.vitaglpbio.com/cf/click">Vie</a></li>
+    </ul>
+</div>
+
+<section class="hero container">
+    <h1>La formule qui n'était pas autorisée en pharmacie — mais que les femmes de tout le pays s'arrachent en ligne</h1>
+    <p class="subhead"><a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a> est une formule prolipolytique naturelle qui active la combustion des graisses pendant le sommeil.</p>
+    <ul class="hero-highlights">
+        <li>Jusqu'à -16 kg en 3 semaines</li>
+        <li>Résultats dès le 3ème jour</li>
+        <li>Recommandé par le Prof. Hirschhausen</li>
+    </ul>
+</section>
+
+<div class="doctor-box">
+    <div class="container flex-row">
+        <div class="flex-cell"><img src="doctor.jpg" class="doctor-img" alt="Dr. Hirschhausen"></div>
+        <div class="flex-cell">
+            <h2 style="font-size: 28px; margin-bottom: 15px;">Dr Michel Cymes</h2>
+            <p style="font-size: 18px; line-height: 1.6;">Bonjour, je suis le Dr Michel Cymes, chirurgien à l'Hôpital Européen Georges-Pompidou à Paris. Depuis 25 ans, j'étudie le métabolisme chez les femmes de plus de 40 ans.</p>
+            <p style="font-size: 18px; line-height: 1.6;">Les recherches les plus récentes montrent que le corps peut brûler des graisses pendant le sommeil — à condition d'activer le bon mécanisme.</p>
+            <p style="font-size: 18px; line-height: 1.6;">C'est ainsi qu'est né <a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a>. Il active la lipolyse : une combustion interne des graisses, sans stress cardiaque, sans stimulants ni régimes.</p>
+            <span class="doctor-badge">⚕ Dr Michel Cymes<br>Chirurgien des Hôpitaux de Paris</span>
+        </div>
+    </div>
+</div>
+
+<section class="container problem-container">
+    <div class="problem-card">
+        <h2 style="color: var(--red-alert); margin-top: 0;">"Vous faites de votre mieux, mais votre corps ne suit pas..."</h2>
+        <p style="font-size: 18px;">Vous essayez des régimes. Vous faites des efforts. Mais le poids semble stagner. Et au lieu de la motivation, vous ne ressentez que fatigue et déception.</p>
+        <ul class="problem-list">
+            <li>Le poids ne part pas, même si vous ne mangez presque rien</li>
+            <li>Ventre gonflé, les vêtements ne tombent pas bien</li>
+            <li>Vous n'avez aucune énergie le matin</li>
+            <li>Après chaque tentative, le poids revient</li>
+            <li>La pensée : "J'ai tout essayé. Rien n'y fait."</li>
+        </ul>
+        <div style="background: #fff4f4; border-radius: 10px; padding: 20px; border: 1px dashed var(--red-alert);">
+            <p style="font-weight: bold; margin-bottom: 5px;">La vérité ?</p>
+            <p>Après 40 ans, votre corps change. Le métabolisme ralentit. Et les anciennes méthodes ne fonctionnent plus.</p>
+        </div>
+    </div>
+</section>
+
+<section class="container danger-box">
+    <div class="flex-row">
+        <div class="flex-cell">
+            <h2 style="color: var(--red-alert); font-size: 30px;">⚠️ Danger de la graisse viscérale</h2>
+            <p style="font-size: 18px;"><strong>La graisse viscérale</strong> — c'est la graisse profonde qui comprime littéralement votre cœur, vos reins, votre foie et d'autres organes.</p>
+            <p style="font-size: 18px;">Elle ralentit votre métabolisme, accumule des toxines et <strong>réduit l'espérance de vie de 12 à 14 ans en moyenne</strong>.</p>
+            <p style="font-size: 18px;"><a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a> aide à réduire cette graisse de manière douce et sûre, et à régénérer le corps de l'intérieur — sans régime ni effort.</p>
+            <div class="danger-note">
+                🩺 Il ne s'agit pas seulement d'être mince.<br>Il s'agit de votre vie.
+            </div>
+        </div>
+        <div class="flex-cell"><img src="visceral.jpeg" style="border-radius:15px; width: 100%;"></div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="precision-section">
+        <div class="container">
+            <h2 style="text-align:center; color: #0056b3; font-size: 32px; margin-bottom: 20px;">Action précise de <a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a></h2>
+            <div class="flex-row" style="margin-top:30px;">
+                <div class="flex-cell">
+                    <p style="font-size: 18px; line-height: 1.8;"><strong><a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a></strong> agit avec douceur et précision. Les molécules ciblent exclusivement les cellules graisseuses sans affecter les autres tissus.</p>
+                    <ul style="font-size: 18px; line-height: 2.2; list-style: none; padding: 0; margin-top: 15px;">
+                        <li>✅ <strong>Ciblage :</strong> S'attaque uniquement aux cellules adipeuses</li>
+                        <li>✅ <strong>Certifié :</strong> Sans hormones & sûr</li>
+                        <li>✅ <strong>Sans effets secondaires :</strong> Processus 100% naturel</li>
+                    </ul>
+                    <p style="font-size: 18px; margin-top: 20px; font-style: italic; color: #444; border-left: 4px solid var(--green-success); padding-left: 15px;">De nombreuses femmes remarquent qu'après seulement 3 jours, la peau est plus lisse et la cellulite disparaît.</p>
+                </div>
+                <div class="flex-cell"><img src="fat.jpg" style="border-radius:15px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="how-works-section">
+        <div class="container">
+            <h2 style="text-align:center; color: var(--red-alert); font-size: 32px;">Comment fonctionne <a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a> ?</h2>
+            <p style="font-size: 18px; font-weight: bold;">C'est très simple :</p>
+            <ul class="how-works-list">
+                <li>1 gélule à 21h00</li>
+                <li>Pendant le sommeil, la formule active la combustion des graisses</li>
+                <li>Le corps utilise la graisse stockée comme source d'énergie</li>
+                <li>Le matin, vous vous sentez plus légère — et voyez la différence dans le miroir</li>
+            </ul>
+            <div style="font-size: 17px; line-height: 1.8; color: #444;">
+                <p>Pas de plans compliqués. Juste une routine du soir — et votre corps commence à fonctionner différemment.</p>
+                <p>Avec l'âge, il devient plus difficile de perdre du poids. Pendant le sommeil, le corps entre en mode de récupération — c'est là qu'il brûle les graisses le plus efficacement.</p>
+                <p><strong>Un soutien simple pour votre corps — exactement quand il en a besoin.</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container compare-section">
+    <h2 style="text-align: center; margin-bottom:40px; font-size: 32px;">La comparaison directe</h2>
+    <div class="compare-grid">
+        <div class="compare-card danger">
+            <h3 style="text-align:center;">Liposuccion</h3>
+            <img src="lipos.jpg" style="width:100%; height:200px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
+            <ul class="compare-list danger-list">
+                <li>La graisse est retirée, pas brûlée</li>
+                <li>Perte de poids d'environ 4 kg</li>
+                <li>Risque d'effets secondaires</li>
+                <li>Traitement sur une seule zone</li>
+                <li>Coûte au moins 1000 €</li>
+                <li>Nécessite une hospitalisation</li>
+            </ul>
+        </div>
+        <div class="compare-card success">
+            <h3 style="text-align:center; color:var(--green-success);"><a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a></h3>
+            <img src="prod.png" style="width:auto; height:200px; object-fit:contain; margin:0 auto 15px;">
+            <ul class="compare-list success-list">
+                <li>Transforme la graisse en énergie</li>
+                <li><strong>Jusqu'à -16 kg en 3 semaines</strong></li>
+                <li>100% naturel et sûr</li>
+                <li>Abordable et facile</li>
+                <li>Disponible en ligne & à domicile</li>
+                <li>Fonctionne pendant le sommeil</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="comment-ticker-container">
+    <div class="container">
+        <h2 style="text-align:center; margin-bottom:30px;">Témoignages clients</h2>
+    </div>
+    <div class="ticker-wrapper">
+        <div class="comment-card"><div class="comment-header"><div class="avatar" style="background-image: url('https://randomuser.me/api/portraits/women/44.jpg');"></div><strong>Helga M.</strong><span class="stars">⭐⭐⭐⭐⭐</span></div><p>"Enfin quelque chose qui fonctionne ! -4kg dès la première semaine."</p></div>
+        <div class="comment-card"><div class="comment-header"><div class="avatar" style="background-image: url('https://randomuser.me/api/portraits/women/65.jpg');"></div><strong>Sabine S.</strong><span class="stars">⭐⭐⭐⭐⭐</span></div><p>"Je dors mieux et mon ventre est beaucoup plus plat."</p></div>
+        <div class="comment-card"><div class="comment-header"><div class="avatar" style="background-image: url('https://randomuser.me/api/portraits/women/68.jpg');"></div><strong>Monique W.</strong><span class="stars">⭐⭐⭐⭐⭐</span></div><p>"J'ai déjà tout essayé, ça c'est incroyable."</p></div>
+        <div class="comment-card"><div class="comment-header"><div class="avatar" style="background-image: url('https://randomuser.me/api/portraits/women/44.jpg');"></div><strong>Helga M.</strong><span class="stars">⭐⭐⭐⭐⭐</span></div><p>"Enfin quelque chose qui fonctionne ! -4kg dès la première semaine."</p></div>
+        <div class="comment-card"><div class="comment-header"><div class="avatar" style="background-image: url('https://randomuser.me/api/portraits/women/65.jpg');"></div><strong>Sabine S.</strong><span class="stars">⭐⭐⭐⭐⭐</span></div><p>"Je dors mieux et mon ventre est beaucoup plus plat."</p></div>
+    </div>
+</section>
+
+<section class="container">
+    <h2 style="text-align: center; font-size: 28px;">Histoires de succès</h2>
+    <div class="carousel-container">
+        <div class="carousel-track" id="track">
+            <div class="slide">
+                <div class="slide-content">
+                    <img src="ba111.jpg" style="width:280px; border-radius:10px;">
+                    <div><p><strong>Avant : 112 kg → Après : 64 kg</strong></p><p>"Je mange ce que je veux !" — Brigitte, 51 ans</p></div>
+                </div>
+            </div>
+            <div class="slide">
+                <div class="slide-content">
+                    <img src="ba222.jpg" style="width:280px; border-radius:10px;">
+                    <div><p><strong>-19 kg en un mois</strong></p><p>"Enfin redevenue moi-même." — Catherine, 33 ans</p></div>
+                </div>
+            </div>
+        </div>
+        <div class="dots" id="dots-container"></div>
+    </div>
+</section>
+
+<footer class="cta-section" id="purchase-section">
+    <div class="container">
+        <h2>Prête à commencer ?</h2>
+        <p style="font-size: 18px;">Obtenez <a href="https://www.vitaglpbio.com/cf/click" class="v-brand">VitaGLP®</a> aujourd'hui avec 50% de réduction.</p>
+        <img src="prod.png" style="width: 180px; margin: 20px auto;"><br>
+        <a href="https://www.vitaglpbio.com/cf/click" class="btn-order pulse-button">OBTENIR LA RÉDUCTION ➔</a>
+        <div style="margin-top:25px;">
+            <p>Valable jusqu'au : <span id="sNow" style="font-weight:bold;"></span></p>
+            <p>L'offre expire dans : <span id="endPromotionTimer" style="color:var(--red-alert); font-weight:bold; font-size:26px;">44:35</span></p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleMenu() {
+        const nav = document.getElementById('navLinks');
+        nav.classList.toggle('active');
+    }
+
+    // 悬浮按钮平滑滚动
+    const stickyCta = document.getElementById('stickyCta');
+    stickyCta.addEventListener('click', function(e) {
+        if(this.hash !== "") {
+            e.preventDefault();
+            document.querySelector(this.hash).scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+
+    // 滚动到底部隐藏悬浮按钮
+    window.addEventListener('scroll', function() {
+        const purchaseSection = document.getElementById('purchase-section');
+        if (purchaseSection) {
+            const rect = purchaseSection.getBoundingClientRect();
+            if (rect.top < window.innerHeight) {
+                stickyCta.style.opacity = '0';
+                stickyCta.style.pointerEvents = 'none';
+            } else {
+                stickyCta.style.opacity = '1';
+                stickyCta.style.pointerEvents = 'auto';
+            }
+        }
+    });
+
+    // 修改为法语日期格式
+    document.getElementById('sNow').innerText = new Intl.DateTimeFormat('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());
+
+    let time = 44 * 60 + 35;
+    setInterval(() => {
+        if (time <= 0) return;
+        time--;
+        let mins = Math.floor(time / 60); let secs = time % 60;
+        document.getElementById('endPromotionTimer').innerText = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
+    }, 1000);
+
+    let currentSlide = 0;
+    const track = document.getElementById('track');
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dots-container');
+    
+    if(slides.length > 0) {
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if(i === 0) dot.classList.add('active');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    function goToSlide(i) {
+        currentSlide = i;
+        if(track) track.style.transform = `translateX(-${i * 100}%)`;
+        document.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+    }
+    
+    setInterval(() => { 
+        if(slides.length > 0) { 
+            currentSlide = (currentSlide + 1) % slides.length; 
+            goToSlide(currentSlide); 
+        } 
+    }, 5000);
+</script>
+
+</body>
+</html>
